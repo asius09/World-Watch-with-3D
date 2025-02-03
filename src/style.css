@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+* {
+  line-height: 1;
+}
+
+.orbitron-thin {
+  font-family: "Orbitron", serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.orbitron-regular {
+  font-family: "Orbitron", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.orbitron-medium {
+  font-family: "Orbitron", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.orbitron-bold {
+  font-family: "Orbitron", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.orbitron-black {
+  font-family: "Orbitron", serif;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.montserrat-thin {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.montserrat-regular {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.montserrat-medium {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.montserrat-bold {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.montserrat-black {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.rajdhani-light {
+  font-family: "Rajdhani", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.rajdhani-regular {
+  font-family: "Rajdhani", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.rajdhani-medium {
+  font-family: "Rajdhani", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.rajdhani-semibold {
+  font-family: "Rajdhani", serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.rajdhani-bold {
+  font-family: "Rajdhani", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.soft-glow-text {
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.4), 0 0 10px rgba(255, 255, 255, 0.3),
+    0 0 15px rgba(0, 255, 255, 0.2), 0 0 25px rgba(0, 255, 255, 0.1);
+}

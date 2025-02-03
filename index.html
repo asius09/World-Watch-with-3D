@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Earth Clock</title>
+    <link rel="icon" href="/svg/earth-svg.svg" type="image/icon" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="bg-[#0A0F1D] text-white w-screen h-screen flex flex-col items-center justify-center relative"
+  >
+    <main
+      class="flex flex-col items-center justify-center w-full h-full relative z-50"
+    >
+      <!-- Search Bar -->
+      <nav
+        class="flex items-center justify-center w-full h-12 absolute top-0 left-0 py-6"
+      >
+        <form
+          autocomplete="off"
+          id="search-container"
+          class="rajdhani-regular flex items-center justify-center relative w-80 h-10 border-[1px] border-white rounded-4xl active::outline-1 active::outline-blue-400 font-mono cursor-pointer"
+        >
+          <i class="ri-map-pin-2-fill absolute top-2.5 left-2"></i>
+          <label for="country" class="w-full absolute left-7"
+            >Select Country</label
+          >
+          <input
+            list="country"
+            id="country"
+            name="country"
+            class="bg-transparent text-white outline-none w-full h-full px-7 py-2 rounded-4xl"
+          />
+          <div
+            id="suggestions"
+            class="bg-white/30 backdrop-blur-lg rounded-md w-[90%] max-h-48 overflow-y-auto absolute top-10 z-50 shadow-lg text-white font-semibold"
+          ></div>
+        </form>
+      </nav>
+<!-- Weather Showcase -->
+<div id="weather-container" class="flex flex-col-reverse lg:grid lg:grid-cols-[60%_1fr] bg-white/30 backdrop-blur-md rounded-2xl w-32 lg:w-72 text-white rajdhani-medium absolute left-4 top-15 lg:top-6 z-10">
+<div class="p-4">
+  <div class="flex justify-between items-center w-full">
+    <div>
+      <h2 id="country-name" class="capitalize font-semibold text-base shrink-0 text-nowrap">United States</h2>
+      <span id="weather-condition" class="text-gray-300 text-sm">Sunny</span>
+    </div>
+    <div class="text-3xl hidden lg:block"><i id="weather-icon" class="ri-sun-fill"></i></div>
+  </div>
+</div>
+<div id="temperature" class="text-5xl lg:text-2xl font-bold bg-black/50 p-2 pt-2 lg:p-4 flex justify-center items-center">41&deg;C</div>
+</div>
+      <!-- Clock -->
+      <section
+        id="time-container"
+        class="flex flex-col items-center justify-center w-full"
+      >
+        <h1
+          id="time"
+          class="flex items-center justify-center gap-2 text-6xl lg:text-[20vh] orbitron-black soft-glow-text"
+        >
+          <span id="hours" class="w-28 lg:w-60 flex items-center justify-center"
+            >00</span
+          >:<span id="minutes" class="w-28 lg:w-60 flex items-center justify-center"
+            >00</span
+          >:<span id="seconds" class="w-28 lg:w-60 flex items-center justify-center"
+            >00</span
+          >
+        </h1>
+        <h2
+          id="date"
+          class="flex items-center justify-center text-xl lg:text-[4vh] uppercase orbitron-bold soft-glow-text mt-2 lg:mt-0"
+        >
+          Feburary 03, 2025
+        </h2>
+      </section>
+    </main>
+    <canvas id="canvas" class="absolute w-full h-full inset-0"></canvas>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
