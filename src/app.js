@@ -1,5 +1,21 @@
+import { EarthScene } from "./utils/earthScene.js";
 import { gsap } from "gsap";
-export class Features {
+//Initialize the Earth Scene
+const earthScene = new EarthScene("#canvas");
+earthScene.init();
+
+function onloadAnimation() {
+  const search = document.querySelector("nav");
+  gsap.from(search, {
+    opacity: 0,
+    y: -20,
+    scale: 0.8,
+    duration: 1,
+  });
+}
+window.addEventListener("DOMContentLoaded", onloadAnimation);
+
+class Weather {
   constructor() {
     this.timeContainer = document.getElementById("time-container");
     this.date = this.timeContainer.querySelector("#date");
@@ -146,64 +162,61 @@ export class Features {
     ];
     this.countries = [];
     this.countryData.forEach((data) => this.countries.push(data.country));
+    // Set default timezone base
+    this.currentTimezone = "Asia/Kolkata";
   }
-  updateTime(date) {
-    const timeData = {
-      now: new Date(date),
-      hours: new Date(date).getHours().toString().padStart(2, "0"),
-      minutes: new Date(date).getMinutes().toString().padStart(2, "0"),
-      seconds: new Date(date).getSeconds().toString().padStart(2, "0"),
-    };
-    const [hoursSpan, minutesSpan, secondsSpan] = [
-      this.timeContainer.querySelector("#hours"),
-      this.timeContainer.querySelector("#minutes"),
-      this.timeContainer.querySelector("#seconds"),
-    ];
-    if (hoursSpan.textContent !== timeData.hours) {
-      hoursSpan.textContent = timeData.hours;
+  updateTime(timestamp) {
+    const timeStr = new Date(timestamp).toLocaleTimeString("en-US", {
+      timeZone: this.currentTimezone,
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    const [hours, minutes, seconds] = timeStr.split(":");
+    const hoursSpan = this.timeContainer.querySelector("#hours");
+    const minutesSpan = this.timeContainer.querySelector("#minutes");
+    const secondsSpan = this.timeContainer.querySelector("#seconds");
+    if (hoursSpan.textContent !== hours) {
+      hoursSpan.textContent = hours;
       gsap.from(hoursSpan, {
-        duration: 0.5,
+        duration: 0.8,
         scale: 0.7,
         opacity: 0,
         ease: "power2.inOut",
       });
     }
-    if (minutesSpan.textContent !== timeData.minutes) {
-      minutesSpan.textContent = timeData.minutes;
+    if (minutesSpan.textContent !== minutes) {
+      minutesSpan.textContent = minutes;
       gsap.from(minutesSpan, {
-        duration: 0.5,
+        duration: 0.8,
         scale: 0.7,
         opacity: 0,
         ease: "power2.inOut",
       });
     }
-    if (secondsSpan.textContent !== timeData.seconds) {
-      secondsSpan.textContent = timeData.seconds;
+    if (secondsSpan.textContent !== seconds) {
+      secondsSpan.textContent = seconds;
       gsap.from(secondsSpan, {
-        duration: 0.5,
+        duration: 0.28,
         scale: 0.7,
         opacity: 0,
         ease: "power2.inOut",
       });
     }
   }
-  updateDate(date) {
-    const dateData = {
-      date: new Date(date).getDate(),
-      month: new Date(date).getMonth(),
-      year: new Date(date).getFullYear(),
-    };
-    if (
-      this.date.textContent !==
-      this.formatDate(dateData.date, dateData.month, dateData.year)
-    ) {
-      this.date.textContent = this.formatDate(
-        dateData.date,
-        dateData.month,
-        dateData.year
-      );
-
-      // Create a more dynamic animation sequence
+  getDefaultCountryTime = async () => {
+    await this.getTimeZoneAndWeather({});
+  };
+  updateDate(timestamp) {
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      timeZone: this.currentTimezone,
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(timestamp));
+    if (this.date.textContent !== formattedDate) {
+      this.date.textContent = formattedDate;
       gsap
         .timeline()
         .from(this.date, {
@@ -224,45 +237,43 @@ export class Features {
         });
     }
   }
-  formatDate(date, month, year) {
-    return new Intl.DateTimeFormat("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(new Date(year, month, date));
-  }
   getIcon(condition) {
     if (!condition) return;
     const iconData = this.weatherIcons.filter((data) =>
       data.conditions.includes(condition)
     );
-    return iconData[0].icon;
+    return iconData.length ? iconData[0].icon : "ri-default-icon";
   }
-  getTimeZoneAndWeather({
+  getTimeZoneAndWeather = async ({
     country = "India",
     timezone = "Asia/Kolkata",
     lat = 20.5937,
     lon = 78.9629,
-    } = {}) {
-    this.weather = {};
+  } = {}) => {
+    // Update the current timezone base
+    this.currentTimezone = timezone;
     const apiKey = "0ed5678bdae1980b5f19984f8f7b6aa1";
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-    fetch(url)
-      .then((Response) => Response.json())
-      .then((data) => {
-        if (data) {
-          const weather = {
-            country: country,
-            temperature: this.KelvinToCelsius(data.main.temp),
-            condition: data.weather[0].main,
-            description: data.weather[0].description,
-            timeStamp: (data.dt) * 1000, //in milliseconds
-          };
-          this.updateDOM(weather);
-        }
-      })
-      .catch((error) => console.log("Error:", error.message));
-  }
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if ((data["cod"] === 200) & response.ok) {
+        const weather = {
+          country: country,
+          temperature: this.KelvinToCelsius(data.main.temp),
+          condition: data.weather[0].main,
+          description: data.weather[0].description,
+          timeStamp: data.dt * 1000, // in milliseconds
+        };
+        // updating DOM with timezone-based time
+        this.updateDOM(weather);
+      } else {
+        throw new Error("Data not recieved:" + data["cod"]);
+      }
+    } catch (error) {
+      console.log("No fetched:", error.message);
+    }
+  };
   updateDOM(weather) {
     this.countryContainer.textContent = weather.country;
     this.temperatureContainer.textContent = weather.temperature;
@@ -276,15 +287,35 @@ export class Features {
       });
     }
   }
-  featureInput() {
-    this.input.addEventListener("input", () => {
+  handleSearch() {
+    let searchTimeout;
+    this.input.addEventListener("input", (e) => {
       this.SuggestionsContainer.innerHTML = "";
       this.label.classList.add("hidden");
-      this.query = this.input.value.toLowerCase();
-      this.showSuggestions(this.query);
+      const query = this.input.value.toLowerCase();
+      this.showSuggestions(query);
       if (!this.input.value) {
         this.label.classList.remove("hidden");
       }
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+      searchTimeout = setTimeout(async () => {
+        if (e.target.value) {
+          if (this.countries.includes(e.target.value)) {
+            this.userInput = e.target.value;
+            this.defaultTimer = false;
+            const requestedCountry = this.countryData.filter(
+              (data) => data.country === this.userInput
+            );
+            if (Object.keys(requestedCountry[0]).length === 0) {
+              console.log("Invalid weather Object:", requestedCountry[0]);
+              return;
+            }
+            await this.getTimeZoneAndWeather(requestedCountry[0]);
+          }
+        }
+      }, 1000);
     });
   }
   showSuggestions(query) {
@@ -292,20 +323,20 @@ export class Features {
       data.toLowerCase().includes(query)
     );
     filterCountry.forEach((suggestion) => {
-      this.suggestionItem = document.createElement("div");
-      this.suggestionItem.classList.add(
+      const suggestionItem = document.createElement("div");
+      suggestionItem.classList.add(
         "p-2",
         "cursor-pointer",
         "hover:bg-black/50",
         "w-full",
         "z-10"
       );
-      this.suggestionItem.textContent = suggestion;
-      this.suggestionItem.addEventListener("click", () => {
+      suggestionItem.textContent = suggestion;
+      suggestionItem.addEventListener("click", () => {
         this.input.value = suggestion;
         this.input.dispatchEvent(new Event("input"));
       });
-      this.SuggestionsContainer.appendChild(this.suggestionItem);
+      this.SuggestionsContainer.appendChild(suggestionItem);
     });
     document.addEventListener("click", (e) => {
       if (
@@ -316,38 +347,14 @@ export class Features {
       }
     });
   }
-  handleSearch() {
-    let searchTimeout;
-    this.input.addEventListener("input", (e) => {
-      if (searchTimeout) {
-        clearTimeout(searchTimeout);
-      }
-      searchTimeout = setTimeout(async () => {
-        if (e.target.value) {
-          if (this.countries.includes(e.target.value)) {
-            this.userInput = e.target.value;
-            const requestedCountry = this.countryData.filter(
-              (data) => data.country === this.userInput
-            );
-            if (Object.keys(requestedCountry[0]).length === 0) {
-              console.log("Invalid weather Object:", requestedCountry[0]);
-              return;
-            }
-            this.defaultTimer = false;
-            this.getTimeZoneAndWeather(requestedCountry[0]);
-          }
-        }
-      }, 1000);
-    });
-  }
   KelvinToCelsius(kelvin) {
     return Math.round(kelvin - 273.15) + "°C";
   }
-  startTime(timestemp) {
+  startTime(timestamp) {
     if (this.intervalID) {
       clearInterval(this.intervalID);
     }
-    let currentTimeStamp = timestemp;
+    let currentTimeStamp = timestamp;
     this.updateTime(currentTimeStamp);
     this.updateDate(currentTimeStamp);
     this.intervalID = setInterval(() => {
@@ -357,10 +364,12 @@ export class Features {
     }, 1000);
   }
   init() {
-    this.featureInput();
     this.handleSearch();
     if(this.defaultTimer) {
       this.getTimeZoneAndWeather({});
     }
   }
 }
+
+const app = new Weather();
+app.init();
