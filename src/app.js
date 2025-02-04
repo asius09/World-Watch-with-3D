@@ -4,16 +4,6 @@ import { gsap } from "gsap";
 const earthScene = new EarthScene("#canvas");
 earthScene.init();
 
-function onloadAnimation() {
-  const search = document.querySelector("nav");
-  gsap.from(search, {
-    opacity: 0,
-    y: -20,
-    scale: 0.8,
-    duration: 1,
-  });
-}
-window.addEventListener("DOMContentLoaded", onloadAnimation);
 
 class Weather {
   constructor() {
@@ -363,13 +353,22 @@ class Weather {
       this.updateDate(currentTimeStamp);
     }, 1000);
   }
+  onloadAnimation() {
+    const search = document.querySelector("nav");
+    gsap.from(search, {
+      opacity: 0,
+      y: -20,
+      scale: 0.8,
+      duration: 1,
+    });
+  }
   init() {
     this.handleSearch();
-    if(this.defaultTimer) {
+    if (this.defaultTimer) {
       this.getTimeZoneAndWeather({});
     }
+    this.onloadAnimation();
   }
 }
-
 const app = new Weather();
 app.init();
